@@ -2,28 +2,28 @@ FROM alpine:3.4
 
 MAINTAINER Jens Mittag <kontakt@jensmittag.de>
 
-ENV NGINX_VERSION=1.9.15
-ENV NGINX_LDAP_COMMIT=b80942160417e95adbadb16adc41aaa19a6a00d9
+ENV NGINX_VERSION=1.13.4
+ENV NGINX_LDAP_COMMIT=42d195d7a7575ebab1c369ad3fc5d78dc2c2669c
 
 RUN set -x \
  && mkdir -p /tmp/src/nginx \
  && export BUILD_DEPS=" \
-        autoconf \
-        automake \
-        curl \
-        g++ \
-        gcc \
+    autoconf \
+    automake \
+    curl \
+    g++ \
+    gcc \
 	git \
-        gzip \
-        libtool \
-        linux-headers \
-        make \
-        openldap-dev \
-        openssl-dev \
-        pcre-dev \
-        tar \
-        unzip \
-        zlib-dev \
+    gzip \
+    libtool \
+    linux-headers \
+    make \
+    openldap-dev \
+    openssl-dev \
+    pcre-dev \
+    tar \
+    unzip \
+    zlib-dev \
 	m4 \
 	perl \
 	libssh2 \
@@ -58,6 +58,7 @@ RUN set -x \
  && apk add --update ${BUILD_DEPS} \
         libldap \
         openssl \
+        openssh \
         pcre \
         zlib
 
@@ -118,6 +119,10 @@ RUN cd /tmp/src/nginx && \
 # Create users for the Nginx process 
 RUN addgroup -g 1000 -S nginx && \
     adduser -u 1000 -S nginx
+
+# Add supervisord
+RUN apk add -u python py-pip && \
+    pip install supervisor
 
 # Clean up build-time packages
 RUN apk del --purge ${BUILD_DEPS} \
